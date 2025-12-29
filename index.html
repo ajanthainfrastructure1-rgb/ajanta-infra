@@ -16,7 +16,7 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-white); overflow: hidden; }
+        body { background-color: var(--bg-dark); color: var(--text-white); overflow-x: hidden; }
 
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -45,10 +45,14 @@
         }
         nav a:hover, nav a.active { color: var(--accent-cyan); text-shadow: 0 0 8px var(--accent-cyan); }
 
-        .scroll-container { height: 100dvh; width: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        /* CHANGED: Use min-height instead of fixed height to prevent cutting off content on mobile */
+        .scroll-container { height: 100vh; width: 100%; overflow-y: auto; scroll-behavior: smooth; }
+        
         section {
-            height: 100dvh; width: 100%; scroll-snap-align: start; scroll-snap-stop: always;
-            padding: 100px 20px 40px 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            min-height: 100vh; /* Allows growing */
+            width: 100%; 
+            padding: 100px 20px 40px 20px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
             opacity: 0; transform: scale(0.95); transition: all 0.7s ease-out;
         }
         section.in-focus { opacity: 1; transform: scale(1); }
@@ -56,7 +60,7 @@
         h2 {
             font-size: 3rem; text-transform: uppercase; letter-spacing: 3px;
             background: linear-gradient(90deg, #fff, var(--text-gray)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 40px; position: relative;
+            margin-bottom: 40px; position: relative; text-align: center;
         }
         h2::after {
             content: ''; display: block; width: 80px; height: 3px;
@@ -64,25 +68,18 @@
         }
 
         .hero-logo { 
-            width: 250px; 
-            height: auto; 
-            margin-bottom: 30px; 
-            background: white; 
-            padding: 20px; 
-            border-radius: 12px; 
-            filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
+            width: 250px; height: auto; margin-bottom: 30px; background: white; 
+            padding: 20px; border-radius: 12px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
         }
+        /* Mobile Font Size Fix included here */
         .hero-title { font-size: 3.5rem; font-weight: 300; text-transform: uppercase; letter-spacing: 4px; text-align: center; }
         .hero-title strong { font-weight: 800; color: var(--accent-cyan); }
-        .hero-quote { font-style: italic; color: var(--accent-gold); margin-top: 20px; font-size: 1.2rem; }
+        .hero-quote { font-style: italic; color: var(--accent-gold); margin-top: 20px; font-size: 1.2rem; text-align: center; }
 
         .about-text { max-width: 900px; text-align: center; font-size: 1.25rem; line-height: 1.8; color: var(--text-gray); }
         .highlight { color: var(--text-white); font-weight: bold; }
         .gold-text { color: var(--accent-gold); font-weight: bold; }
-        .year-badge { 
-            display: inline-block; padding: 8px 20px; border: 1px solid var(--accent-gold); 
-            color: var(--accent-gold); border-radius: 30px; margin-bottom: 25px; font-weight: bold; letter-spacing: 1px;
-        }
+        .year-badge { display: inline-block; padding: 8px 20px; border: 1px solid var(--accent-gold); color: var(--accent-gold); border-radius: 30px; margin-bottom: 25px; font-weight: bold; letter-spacing: 1px; }
 
         .team-container { display: flex; flex-direction: column; gap: 40px; align-items: center; width: 100%; max-width: 900px; }
         .team-top { display: flex; gap: 60px; justify-content: center; flex-wrap: wrap; }
@@ -93,50 +90,22 @@
         .dark-card:hover { border-color: var(--accent-cyan); box-shadow: var(--glow-cyan); transform: translateY(-5px); }
         .team-member h3 { font-size: 1.5rem; margin-bottom: 5px; color: var(--text-white); }
         .team-member .role { color: var(--accent-cyan); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: block; }
-        .phone-btn { 
-            display: inline-block; padding: 8px 20px; background: rgba(255,255,255,0.05); color: var(--text-gray);
-            text-decoration: none; border-radius: 50px; font-size: 0.9rem; transition: 0.3s;
-        }
+        .phone-btn { display: inline-block; padding: 8px 20px; background: rgba(255,255,255,0.05); color: var(--text-gray); text-decoration: none; border-radius: 50px; font-size: 0.9rem; transition: 0.3s; }
         .phone-btn:hover { background: var(--accent-cyan); color: #000; }
 
-        .client-wrap { 
-            display: flex; 
-            gap: 25px; 
-            justify-content: center; 
-            flex-wrap: wrap; 
-            width: 100%; 
-            max-width: 1400px;
-        }
-        
+        .client-wrap { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 1400px; }
         .client-box { 
-            width: 300px;
-            padding: 25px; 
-            display: flex; flex-direction: column; align-items: center; 
-            background: var(--bg-card); 
-            border: 1px solid rgba(255,255,255,0.05); 
-            border-radius: 12px;
-            transition: 0.3s;
+            width: 300px; padding: 25px; display: flex; flex-direction: column; align-items: center; 
+            background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; transition: 0.3s;
         }
-        
-        .client-box:hover {
-             border-color: var(--accent-gold); 
-             transform: translateY(-5px);
-             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .client-box img { 
-            width: 100%; 
-            height: 180px; 
-            object-fit: contain; margin-bottom: 20px; 
-            background: white; padding: 10px; border-radius: 8px; 
-        }
-        
-        .client-name { color: var(--accent-gold); font-weight: bold; letter-spacing: 0.5px; font-size: 1rem; margin-bottom: 5px; text-transform: uppercase; text-align: center;}
+        .client-box:hover { border-color: var(--accent-gold); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .client-box img { width: 100%; height: 140px; object-fit: contain; margin-bottom: 20px; background: white; padding: 10px; border-radius: 8px; }
+        .client-name { color: var(--accent-gold); font-weight: bold; letter-spacing: 0.5px; font-size: 1rem; margin-bottom: 5px; text-transform: uppercase; text-align: center; }
         .client-detail { font-size: 0.85rem; color: var(--text-gray); line-height: 1.3; text-align: center; }
 
         .contact-layout { 
             display: flex; gap: 40px; width: 90%; max-width: 1000px; background: var(--bg-card); 
-            padding: 50px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); 
+            padding: 50px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 40px; /* Space for footer */
         }
         .contact-left { flex: 1; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 30px; text-align: left; }
         .contact-right { flex: 1.2; }
@@ -144,34 +113,31 @@
         .info-title { color: var(--accent-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display: block; }
         .info-data { font-size: 1.2rem; }
         
-        .input-dark { 
-            width: 100%; padding: 15px; background: rgba(0,0,0,0.3); 
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; 
-            color: white; margin-bottom: 20px; font-size: 1rem; 
-        }
-        .btn-neon { 
-            width: 100%; padding: 15px; background: transparent; 
-            border: 2px solid var(--accent-cyan); color: var(--accent-cyan); 
-            font-weight: bold; letter-spacing: 2px; text-transform: uppercase; 
-            cursor: pointer; transition: 0.3s; 
-        }
+        .input-dark { width: 100%; padding: 15px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white; margin-bottom: 20px; font-size: 1rem; }
+        .btn-neon { width: 100%; padding: 15px; background: transparent; border: 2px solid var(--accent-cyan); color: var(--accent-cyan); font-weight: bold; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
         .btn-neon:hover { background: var(--accent-cyan); color: #000; box-shadow: var(--glow-cyan); }
 
-        @media (max-width: 1200px) {
-            .client-box { width: 45%; }
+        /* FIXED FOOTER STYLE: Not absolute anymore */
+        footer {
+            margin-top: auto; 
+            padding-bottom: 30px; 
+            font-size: 0.8rem; 
+            color: #555;
+            text-align: center;
+            width: 100%;
         }
+
+        @media (max-width: 1200px) { .client-box { width: 45%; } }
         @media (max-width: 768px) {
             .nav-inner { gap: 15px; font-size: 0.7rem; }
             h2 { font-size: 2.5rem; }
-            .hero-title { 
-                font-size: 1.8rem; /* Much smaller than 3.5rem */
-                letter-spacing: 1px; /* Reduce spacing so it fits */
-                word-wrap: break-word; /* Safety net */
-            }
+            .hero-title { font-size: 1.8rem; letter-spacing: 1px; word-wrap: break-word; } /* Font Fix */
             .team-top { flex-direction: column; gap: 20px; }
             .contact-layout { flex-direction: column; padding: 30px; }
             .contact-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 20px; }
             .client-box { width: 100%; }
+            /* Footer adjustments for mobile */
+            footer { position: relative; bottom: auto; margin-top: 20px; }
         }
     </style>
 </head>
@@ -195,7 +161,7 @@
         
         <section id="home-page">
             <img src="image.png" alt="Logo" class="hero-logo">
-            <div class="hero-title">Ajanta <strong>Infrastructure</strong></div>
+            <div class="hero-title">Ajanta <strong>Infra</strong></div>
             <div class="hero-quote">"Building Your Dreams, One Brick at a Time"</div>
             <div style="margin-top: 60px; font-size: 2rem; color: var(--accent-cyan); animation: bounce 2s infinite;">
                 ↓
@@ -247,13 +213,13 @@
                 <div class="client-box">
                     <img src="lnt.png" alt="L&T Construction">
                     <div class="client-name">L&T CONSTRUCTION</div>
-                    <div class="client-detail">Addanki & Ongole</div>
+                    <div class="client-detail">AP TIDCO Projects</div>
                 </div>
                 
                 <div class="client-box">
                     <img src="APGOVT.jpeg" alt="Government of AP">
                     <div class="client-name">Government of Andhra Pradesh</div>
-                    <div class="client-detail">Roads and Building development</div>
+                    <div class="client-detail">Roads and Building Development</div>
                 </div>
 
                 <div class="client-box">
@@ -271,13 +237,13 @@
                 <div class="client-box">
                     <img src="Ramky.png" alt="Ramky Infrastructure">
                     <div class="client-name">Ramky Infrastructure</div>
-                    <div class="client-detail">Infrastructure Partner</div>
+                    <div class="client-detail">Residential Development</div>
                 </div>
 
                 <div class="client-box">
                     <img src="mega.jpg" alt="MEIL">
                     <div class="client-name">MEIL</div>
-                    <div class="client-detail">AP TIDCO Project: Ponnur</div>
+                    <div class="client-detail">Infrastructure Partner</div>
                 </div>
 
                 <div class="client-box">
@@ -304,7 +270,7 @@
                 </div>
                 
                 <div class="contact-right">
-                    <form action="https://formsubmit.co/kesanikhith@gmail.com" method="POST">
+                    <form action="https://formsubmit.co/INSERT_EMAIL_HERE" method="POST">
                         <input type="hidden" name="_captcha" value="false">
                         <input type="tel" name="phone" placeholder="Phone Number" class="input-dark" required>
                         <input type="text" name="name" placeholder="Name" class="input-dark" required>
@@ -314,9 +280,9 @@
                 </div>
             </div>
             
-            <div style="position: absolute; bottom: 20px; font-size: 0.8rem; color: #555;">
+            <footer>
                 &copy; 2014 Ajanta Infrastructure. All Rights Reserved.
-            </div>
+            </footer>
         </section>
 
     </div>
@@ -350,5 +316,3 @@
     </script>
 </body>
 </html>
-
-
