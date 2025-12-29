@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajanta Infrastructure</title>
+    <style>
+        :root {
+            --bg-dark: #0b1121;
+            --bg-card: #1e293b;
+            --accent-cyan: #06b6d4;
+            --accent-gold: #f59e0b;
+            --text-white: #f8fafc;
+            --text-gray: #94a3b8;
+            --glow-cyan: 0 0 15px rgba(6, 182, 212, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-white); overflow: hidden; }
+
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -2; pointer-events: none;
+        }
+
+        .watermark-layer {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 60vw; max-width: 500px; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.8s ease;
+        }
+        .watermark-layer img { width: 100%; opacity: 0.05; filter: grayscale(100%) invert(1) brightness(2); }
+        .watermark-layer.visible { opacity: 1; }
+
+        nav {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 20px; z-index: 1000;
+            display: flex; justify-content: center; background: rgba(11, 17, 33, 0.95);
+            border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+        }
+        .nav-inner { display: flex; gap: 30px; }
+        nav a {
+            text-decoration: none; color: var(--text-gray); font-weight: 600; text-transform: uppercase;
+            font-size: 0.8rem; letter-spacing: 2px; transition: 0.3s; cursor: pointer;
+        }
+        nav a:hover, nav a.active { color: var(--accent-cyan); text-shadow: 0 0 8px var(--accent-cyan); }
+
+        .scroll-container { height: 100dvh; width: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        section {
+            height: 100dvh; width: 100%; scroll-snap-align: start; scroll-snap-stop: always;
+            padding: 100px 20px 40px 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; transform: scale(0.95); transition: all 0.7s ease-out;
+        }
+        section.in-focus { opacity: 1; transform: scale(1); }
+
+        h2 {
+            font-size: 3rem; text-transform: uppercase; letter-spacing: 3px;
+            background: linear-gradient(90deg, #fff, var(--text-gray)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 40px; position: relative;
+        }
+        h2::after {
+            content: ''; display: block; width: 80px; height: 3px;
+            background: var(--accent-cyan); margin: 15px auto 0 auto; box-shadow: 0 0 10px var(--accent-cyan);
+        }
+
+        .hero-logo { 
+            width: 250px; 
+            height: auto; 
+            margin-bottom: 30px; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
+        }
+        .hero-title { font-size: 3.5rem; font-weight: 300; text-transform: uppercase; letter-spacing: 4px; text-align: center; }
+        .hero-title strong { font-weight: 800; color: var(--accent-cyan); }
+        .hero-quote { font-style: italic; color: var(--accent-gold); margin-top: 20px; font-size: 1.2rem; }
+
+        .about-text { max-width: 900px; text-align: center; font-size: 1.25rem; line-height: 1.8; color: var(--text-gray); }
+        .highlight { color: var(--text-white); font-weight: bold; }
+        .gold-text { color: var(--accent-gold); font-weight: bold; }
+        .year-badge { 
+            display: inline-block; padding: 8px 20px; border: 1px solid var(--accent-gold); 
+            color: var(--accent-gold); border-radius: 30px; margin-bottom: 25px; font-weight: bold; letter-spacing: 1px;
+        }
+
+        .team-container { display: flex; flex-direction: column; gap: 40px; align-items: center; width: 100%; max-width: 900px; }
+        .team-top { display: flex; gap: 60px; justify-content: center; flex-wrap: wrap; }
+        .dark-card {
+            background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); transition: 0.3s; padding: 30px; width: 300px; text-align: center;
+        }
+        .dark-card:hover { border-color: var(--accent-cyan); box-shadow: var(--glow-cyan); transform: translateY(-5px); }
+        .team-member h3 { font-size: 1.5rem; margin-bottom: 5px; color: var(--text-white); }
+        .team-member .role { color: var(--accent-cyan); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: block; }
+        .phone-btn { 
+            display: inline-block; padding: 8px 20px; background: rgba(255,255,255,0.05); color: var(--text-gray);
+            text-decoration: none; border-radius: 50px; font-size: 0.9rem; transition: 0.3s;
+        }
+        .phone-btn:hover { background: var(--accent-cyan); color: #000; }
+
+        .client-wrap { 
+            display: flex; 
+            gap: 25px; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+            width: 100%; 
+            max-width: 1400px;
+        }
+        
+        .client-box { 
+            width: 300px;
+            padding: 25px; 
+            display: flex; flex-direction: column; align-items: center; 
+            background: var(--bg-card); 
+            border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+        
+        .client-box:hover {
+             border-color: var(--accent-gold); 
+             transform: translateY(-5px);
+             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .client-box img { 
+            width: 100%; 
+            height: 180px; 
+            object-fit: contain; margin-bottom: 20px; 
+            background: white; padding: 10px; border-radius: 8px; 
+        }
+        
+        .client-name { color: var(--accent-gold); font-weight: bold; letter-spacing: 0.5px; font-size: 1rem; margin-bottom: 5px; text-transform: uppercase; text-align: center;}
+        .client-detail { font-size: 0.85rem; color: var(--text-gray); line-height: 1.3; text-align: center; }
+
+        .contact-layout { 
+            display: flex; gap: 40px; width: 90%; max-width: 1000px; background: var(--bg-card); 
+            padding: 50px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); 
+        }
+        .contact-left { flex: 1; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 30px; text-align: left; }
+        .contact-right { flex: 1.2; }
+        .info-row { margin-bottom: 30px; }
+        .info-title { color: var(--accent-cyan); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .info-data { font-size: 1.2rem; }
+        
+        .input-dark { 
+            width: 100%; padding: 15px; background: rgba(0,0,0,0.3); 
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; 
+            color: white; margin-bottom: 20px; font-size: 1rem; 
+        }
+        .btn-neon { 
+            width: 100%; padding: 15px; background: transparent; 
+            border: 2px solid var(--accent-cyan); color: var(--accent-cyan); 
+            font-weight: bold; letter-spacing: 2px; text-transform: uppercase; 
+            cursor: pointer; transition: 0.3s; 
+        }
+        .btn-neon:hover { background: var(--accent-cyan); color: #000; box-shadow: var(--glow-cyan); }
+
+        @media (max-width: 1200px) {
+            .client-box { width: 45%; }
+        }
+        @media (max-width: 768px) {
+            .nav-inner { gap: 15px; font-size: 0.7rem; }
+            h2 { font-size: 2.5rem; }
+            .team-top { flex-direction: column; gap: 20px; }
+            .contact-layout { flex-direction: column; padding: 30px; }
+            .contact-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 20px; }
+            .client-box { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-inner">
+            <a onclick="scrollToId('home-page')" id="nav-home" class="active">Home</a>
+            <a onclick="scrollToId('about-page')" id="nav-about">About</a>
+            <a onclick="scrollToId('team-page')" id="nav-team">Team</a>
+            <a onclick="scrollToId('client-page')" id="nav-client">Clients</a>
+            <a onclick="scrollToId('contact-page')" id="nav-contact">Contact</a>
+        </div>
+    </nav>
+
+    <div class="watermark-layer" id="bg-watermark">
+        <img src="image.png" alt="">
+    </div>
+
+    <div class="scroll-container">
+        
+        <section id="home-page">
+            <img src="image.png" alt="Logo" class="hero-logo">
+            <div class="hero-title">Ajanta <strong>Infrastructure</strong></div>
+            <div class="hero-quote">"Building Your Dreams, One Brick at a Time"</div>
+            <div style="margin-top: 60px; font-size: 2rem; color: var(--accent-cyan); animation: bounce 2s infinite;">
+                ↓
+            </div>
+        </section>
+
+        <section id="about-page">
+            <h2>About Us</h2>
+            <div class="year-badge">EST. 2014</div>
+            <div class="about-text">
+                <p>
+                    Ajanta Infrastructure is a premier construction firm based in <span class="highlight">Hyderabad</span>.
+                    Since 2014, we have evolved into a full-scale infrastructure provider, specializing in 
+                    <span class="gold-text">Residential & Commercial Construction</span>, Real Estate Development, and Logistics.
+                </p>
+                <br>
+                <p>
+                    We are driven by three core values: <span class="highlight" style="color:var(--accent-cyan)">Integrity, Innovation, and Quality</span>. 
+                    Whether supplying premium raw materials or executing government projects, our mission is to build infrastructure that offers long-term value and engineering excellence.
+                </p>
+            </div>
+        </section>
+
+        <section id="team-page">
+            <h2>Leadership</h2>
+            <div class="team-container">
+                <div class="team-top">
+                    <div class="dark-card team-member">
+                        <h3>I. Anil Reddy</h3>
+                        <span class="role">Proprietor & GM</span>
+                        <a href="tel:9666674789" class="phone-btn">96666 74789</a>
+                    </div>
+                    <div class="dark-card team-member">
+                        <h3>I. V. Shashank Reddy</h3>
+                        <span class="role">CEO</span>
+                        <a href="tel:9542720943" class="phone-btn">95427 20943</a>
+                    </div>
+                </div>
+                <div class="team-top">
+                    <div class="dark-card team-member" style="border-top: 1px solid var(--accent-gold);">
+                        <h3>P. Bhargav Ram</h3>
+                        <span class="role" style="color: var(--accent-gold);">Construction Engineer</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="client-page">
+            <h2>Trusted Partners</h2>
+            <div class="client-wrap">
+                <div class="client-box">
+                    <img src="lnt.png" alt="L&T Construction">
+                    <div class="client-name">L&T CONSTRUCTION</div>
+                    <div class="client-detail">Addanki & Ongole</div>
+                </div>
+                
+                <div class="client-box">
+                    <img src="APGOVT.jpeg" alt="Government of AP">
+                    <div class="client-name">Government of Andhra Pradesh</div>
+                    <div class="client-detail">Roads and Building development</div>
+                </div>
+
+                <div class="client-box">
+                    <img src="SP.jpeg" alt="Shapoorji Pallonji">
+                    <div class="client-name">Shapoorji Pallonji</div>
+                    <div class="client-detail">Infrastructure Partner</div>
+                </div>
+
+                <div class="client-box">
+                    <img src="Krushi.jpeg" alt="Krushi Infra">
+                    <div class="client-name">KRUSHI INFRA</div>
+                    <div class="client-detail">Infrastructure Partner</div>
+                </div>
+
+                <div class="client-box">
+                    <img src="Ramky.png" alt="Ramky Infrastructure">
+                    <div class="client-name">Ramky Infrastructure</div>
+                    <div class="client-detail">Infrastructure Partner</div>
+                </div>
+
+                <div class="client-box">
+                    <img src="mega.jpg" alt="MEIL">
+                    <div class="client-name">MEIL</div>
+                    <div class="client-detail">AP TIDCO Project: Ponnur</div>
+                </div>
+
+                <div class="client-box">
+                    <img src="AR.jpeg" alt="AR Homes">
+                    <div class="client-name">AR HOMES</div>
+                    <div class="client-detail">Residential Development</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact-page">
+            <h2>Contact Us</h2>
+            <div class="contact-layout">
+                <div class="contact-left">
+                    <div class="info-row">
+                        <span class="info-title">Headquarters</span>
+                        <div class="info-data">J.P. Nagar, Miyapur<br>Hyderabad</div>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-title">Direct Lines</span>
+                        <div class="info-data" style="color: var(--accent-cyan);">96666 74789</div>
+                        <div class="info-data" style="color: var(--accent-cyan);">95427 20943</div>
+                    </div>
+                </div>
+                
+                <div class="contact-right">
+                    <form action="https://formsubmit.co/kesanikhith@gmail.com" method="POST">
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="tel" name="phone" placeholder="Phone Number" class="input-dark" required>
+                        <input type="text" name="name" placeholder="Name" class="input-dark" required>
+                        <textarea name="message" placeholder="Message..." class="input-dark" style="height: 100px;" required></textarea>
+                        <button type="submit" class="btn-neon">SEND QUERY</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div style="position: absolute; bottom: 20px; font-size: 0.8rem; color: #555;">
+                &copy; 2014 Ajanta Infrastructure. All Rights Reserved.
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        function scrollToId(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const navId = 'nav-' + entry.target.id.split('-')[0];
+                const navItem = document.getElementById(navId);
+                const watermark = document.getElementById('bg-watermark');
+
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-focus');
+                    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+                    if(navItem) navItem.classList.add('active');
+
+                    if (entry.target.id === 'home-page') {
+                        watermark.classList.remove('visible');
+                    } else {
+                        watermark.classList.add('visible');
+                    }
+                } else {
+                    entry.target.classList.remove('in-focus');
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('section').forEach(section => { observer.observe(section); });
+    </script>
+</body>
+</html>
